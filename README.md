@@ -1,117 +1,169 @@
-# 加班時數報表產生器 API
+# 加班時數管理系統
 
-此專案提供一個 API，用於從 Google Calendar 事件和手動記錄 (`duties.json`) 產生醫師加班時數的 Excel 報表。
+這是一個用於管理和計算醫師加班時數的系統，包括前後端應用。
 
-## 專案結構
+## 系統架構
 
-```
-Overtime_duty/
-├── .venv/                  # Python 虛擬環境
-├── data/                   # 資料與設定檔
-│   ├── holiday_2025.json   # 假日定義
-│   ├── duties.json         # 手動排班記錄
-│   ├── members.json        # 成員與日曆 ID
-│   ├── VSduty_template.xlsx # Excel 模板
-│   ├── service_account.json # Google Service Account 金鑰
-│   └── output/             # 存放產生的 Excel 報表
-├── src/                    # 原始碼
-│   ├── __init__.py
-│   ├── services/           # 服務模組 (假日、Excel)
-│   │   ├── __init__.py
-│   │   ├── holiday_service.py
-│   │   └── excel_service.py
-│   ├── core/               # 核心邏輯 (報表產生)
-│   │   ├── __init__.py
-│   │   └── report_generator.py
-│   └── api/                # API 伺服器
-│       ├── __init__.py
-│       └── main.py           # FastAPI 應用程式
-├── requirements.txt        # 專案依賴
-└── README.md               # 本檔案
-```
+- **前端**：React應用，提供用戶界面
+- **後端**：FastAPI應用，提供API服務
 
-## 設定步驟
+## 快速開始
 
-1.  **Clone 專案** (如果尚未完成)
-2.  **建立虛擬環境**:
-    ```bash
-    python -m venv .venv
-    source .venv/bin/activate  # macOS / Linux
-    # .venv\Scripts\activate  # Windows
-    ```
-3.  **安裝依賴**:
-    ```bash
-    pip install -r requirements.txt
-    ```
-4.  **設定 Google Service Account**:
-    *   確保你擁有一個 Google Cloud Platform 專案，並已啟用 Google Calendar API。
-    *   建立一個服務帳號，並下載其 JSON 金鑰檔案。
-    *   將下載的 JSON 金鑰檔案命名為 `service_account.json` 並放置在 `data/` 目錄下。
-    *   **重要**: 與每個成員的 Google Calendar 共享行事曆讀取權限給這個服務帳號的電子郵件地址 (可在 `service_account.json` 中找到 `client_email`)。
-5.  **準備資料檔案**:
-    *   確保 `data/members.json` 包含正確的成員 ID、姓名、員工編號 (`employee_id`) 和 Google Calendar ID (`calendar_id`)。
-    *   確保 `data/holiday_2025.json` 包含正確的假日資訊。
-    *   確保 `data/duties.json` 包含手動排班記錄 (如果需要)。
-    *   確保 `data/VSduty_template.xlsx` 是正確的 Excel 模板。
+### 使用Docker部署
 
-## 運行 API 伺服器
+1. 複製環境變量文件並按需修改
+   ```
+   cp backend/.env.example backend/.env
+   ```
 
-在專案根目錄 (`Overtime_duty/`) 下執行以下命令：
+2. 使用docker-compose啟動服務
+   ```
+   docker-compose up -d
+   ```
+
+3. 訪問應用
+   - 前端界面：http://localhost:9527
+   - 後端API：http://localhost/api
+
+### 本地開發
+
+#### 後端
+
+1. 進入後端目錄
+   ```
+   cd backend
+   ```
+
+2. 安裝依賴
+   ```
+   pip install -r requirements.txt
+   ```
+
+3. 運行開發服務器
+   ```
+   uvicorn src.api.main:app --reload
+   ```
+
+#### 前端
+
+1. 進入前端目錄
+   ```
+   cd frontend
+   ```
+
+2. 安裝依賴
+   ```
+   npm install
+   ```
+
+3. 運行開發服務器
+   ```
+   npm start
+   ```
+
+## 數據文件
+
+- `backend/data/duties.json`：加班記錄數據
+- `backend/data/holiday_2025.json`：假日數據
+
+## API文檔
+
+啟動後端服務後，訪問 http://localhost:5000/docs 獲取API文檔。
+
+## 功能特點
+
+- 加班記錄管理：添加、查看和刪除加班記錄
+- 假日日曆管理：設置和管理假日和特殊工作日
+- 報表生成：按月份生成加班報表並下載
+
+## 技術棧
+
+- 前端：React, TypeScript, Material UI
+- 後端：Python, FastAPI
+- 容器化：Docker, Docker Compose
+
+## 在樹莓派上部署
+
+### 前置條件
+
+- 樹莓派4B或更高版本（建議至少2GB RAM）
+- 樹莓派OS (64位) 或其他Linux發行版
+- 已安裝Docker和Docker Compose
+
+### 部署步驟
+
+1. 克隆專案到樹莓派
 
 ```bash
-uvicorn src.api.main:app --host 0.0.0.0 --port 8088 --reload
+git clone https://github.com/yourusername/overtime-duty.git
+cd overtime-duty
 ```
 
-*   `--host 0.0.0.0`: 讓伺服器可以從外部網路訪問 (如果需要)。如果只想在本機訪問，可以使用 `127.0.0.1`。
-*   `--port 8088`: 指定監聽的埠號。
-*   `--reload`: 開發模式下啟用自動重新載入。當程式碼變更時，伺服器會自動重啟。
+2. 使用Docker Compose啟動應用
 
-伺服器啟動後，你可以訪問：
-
-*   **API 端點**: `http://<your-ip-address>:8088/generate_report/{year_month}` (使用 POST 方法)
-*   **自動文件 (Swagger UI)**: `http://<your-ip-address>:8088/docs`
-*   **備選文件 (ReDoc)**: `http://<your-ip-address>:8088/redoc`
-
-## 使用 API
-
-你可以使用 `curl` 或任何 API 客戶端工具 (如 Postman, Insomnia) 向 `/generate_report/{year_month}` 端點發送 POST 請求。
-
-**範例 (使用 curl):**
-
-*   **產生 2025 年 4 月所有成員的報表:**
-    ```bash
-    curl -X POST "http://localhost:8088/generate_report/202504" -H "accept: application/json"
-    ```
-*   **只產生 2025 年 4 月成員 'A' 的報表:**
-    ```bash
-    curl -X POST "http://localhost:8088/generate_report/202504?member_id=A" -H "accept: application/json"
-    ```
-
-**回應範例 (成功):**
-
-```json
-{
-  "message": "成功為 202504 (成員: 所有) 產生報表。",
-  "generated_files": [
-    {
-      "path": "/Users/jasmac/Documents/Overtime_duty/data/output/202504_林怡芸.xlsx",
-      "url": "/download/202504_林怡芸.xlsx"
-    },
-    {
-      "path": "/Users/jasmac/Documents/Overtime_duty/data/output/202504_游雅盛.xlsx",
-      "url": "/download/202504_游雅盛.xlsx"
-    }
-    // ... 其他成員 ...
-  ]
-}
+```bash
+docker-compose up -d
 ```
 
-**注意**: 回應中的 `url` 欄位 `/download/...` 目前僅為示例。若要實際提供下載功能，需要在 FastAPI 中額外設定靜態檔案路由來服務 `data/output/` 目錄下的檔案。
+這將啟動前端和後端服務。前端在9527端口可訪問，後端API在8088端口。
 
-## 待辦事項 / 可能的改進
+3. 訪問應用
 
-*   在 API 中實現實際的檔案下載功能 (例如，透過 `/download/{filename}` 端點)。
-*   增加更詳細的錯誤處理和日誌記錄。
-*   加入單元測試和整合測試。
-*   考慮將設定 (如檔案路徑) 移到環境變數或設定檔中。
-*   針對大量成員或長時間範圍的請求，考慮使用背景任務 (如 Celery) 來處理報表產生，避免 API 請求超時。 
+在瀏覽器中訪問 `http://your-raspberry-pi-ip:9527`
+
+### 配置說明
+
+- 所有後端數據存儲在 `backend/data` 目錄中，並通過卷映射到容器內
+- 可以通過修改 `docker-compose.yml` 更改端口和資源限制
+
+## 維護
+
+### 更新應用
+
+```bash
+# 拉取最新代碼
+git pull
+
+# 重建並重啟容器
+docker-compose down
+docker-compose build
+docker-compose up -d
+```
+
+### 查看日誌
+
+```bash
+# 查看所有容器日誌
+docker-compose logs
+
+# 查看特定服務日誌
+docker-compose logs backend
+docker-compose logs frontend
+
+# 持續查看日誌
+docker-compose logs -f
+```
+
+### 備份數據
+
+```bash
+# 備份數據目錄
+cp -r backend/data /backup/overtime-duty-data-$(date +%Y%m%d)
+```
+
+## 針對樹莓派的優化說明
+
+1. 資源限制：Docker Compose配置中限制了CPU和內存使用，防止系統資源過度使用
+2. 持久化存儲：所有數據通過卷映射保存在宿主機上，確保容器重啟後數據不丟失
+3. 服務自動重啟：配置了服務自動重啟，提高系統穩定性
+
+## 故障排除
+
+**問題1: 網站無法訪問**  
+檢查Docker容器是否正常運行：`docker-compose ps`
+
+**問題2: 後端API連接失敗**  
+檢查後端日誌：`docker-compose logs backend`
+
+**問題3: 樹莓派性能問題**  
+調整`docker-compose.yml`中的資源限制，降低CPU和內存限制

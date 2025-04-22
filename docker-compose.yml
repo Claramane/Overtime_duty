@@ -1,0 +1,33 @@
+# 移除過時的version屬性
+
+services:
+  # 後端API服務
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: overtime-backend
+    volumes:
+      - ./backend:/app
+      - ./backend/data:/app/data
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./backend/.env
+    restart: unless-stopped
+
+  # 前端Web服務
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: overtime-frontend
+    depends_on:
+      - backend
+    ports:
+      - "9527:80"
+    restart: unless-stopped
+
+# 定義持久化存儲
+volumes:
+  db_data: {} 
