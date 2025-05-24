@@ -1,0 +1,45 @@
+# Python virtual environments
+.venv/
+venv/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# MacOS metadata
+.DS_Store
+
+# Log files
+*.log
+
+# Data files: sensitive or generated
+data/service_account.json
+data/output/
+
+# IDE/editor settings
+.vscode/
+.idea/
+
+# Python packaging build artifacts
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.env
+.Python
+pip-wheel-metadata/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Test and coverage artifacts
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Mypy cache
+.mypy_cache/
+.dmypy.json
+dmypy.json

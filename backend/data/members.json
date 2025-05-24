@@ -1,0 +1,52 @@
+{
+    "calendars": [
+      {
+        "id": "A",
+        "name": "林怡芸",
+        "employee_id": "01757",
+        "calendar_id": "3bfa65fbc1749b06960345969846e6b5592edcd8e1fcfad4f485138e1e9a52fd@group.calendar.google.com"
+      },
+      {
+        "id": "B",
+        "name": "游雅盛",
+        "employee_id": "01221",
+        "calendar_id": "e296febd6ec321939b3f9a86f77ea39d156222118f0ecae0d4dfe3f85b04089a@group.calendar.google.com"
+      },
+      {
+        "id": "C",
+        "name": "陳燁晨",
+        "employee_id": "02003",
+        "calendar_id": "5c3a025dafa89c140110043c3bc56d4b83c7e0639bc6d4264497cc63fa186a6b@group.calendar.google.com"
+      },
+      {
+        "id": "D",
+        "name": "顏任軒",
+        "employee_id": "02002",
+        "calendar_id": "48081c6df410c40f2d7decb278ac32cb96e7373502cbbcf44a0f7b95dea012ec@group.calendar.google.com"
+      },
+      {
+        "id": "E",
+        "name": "吳佩諭",
+        "employee_id": "01161",
+        "calendar_id": "8ac83ef17a2ab360bfb04bb4dde4b4bdfa422e4329ea683dbf52703b91450f0f@group.calendar.google.com"
+      },
+      {
+        "id": "F",
+        "name": "史若蘭",
+        "employee_id": "00013",
+        "calendar_id": "06618e6775ebd86696cf47b0b631254466c9490f1fc3a13999dab089159f6806@group.calendar.google.com"
+      },
+      {
+        "id": "G",
+        "name": "陳品臣",
+        "employee_id": "02106",
+        "calendar_id": "b23ac61f2083bef01697be4a71e534fb3dec75cba32f87d99ace44e63119b2d8@group.calendar.google.com"
+      },
+      {
+        "id": "H",
+        "name": "陳柏羽",
+        "employee_id": "02109",
+        "calendar_id": "27baf5a2f9810dcf8c7b180eea5c719cfec351240953ffcaeb548e6420babcac@group.calendar.google.com"
+      }
+    ]
+  }

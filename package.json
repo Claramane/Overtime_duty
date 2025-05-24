@@ -1,0 +1,22 @@
+{
+  "name": "overtime-duty",
+  "version": "1.0.0",
+  "description": "醫師加班時數管理系統",
+  "main": "index.js",
+  "scripts": {
+    "start:backend": "cd backend && uvicorn src.api.main:app --host 0.0.0.0 --port 8088 --reload",
+    "start:frontend": "cd frontend && npm start",
+    "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
+    "install:all": "cd backend && pip install -r requirements.txt && cd ../frontend && npm install"
+  },
+  "keywords": [
+    "duty",
+    "management",
+    "overtime"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+} 
