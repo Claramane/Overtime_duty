@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# 加班單產生器2.0啟動腳本
-echo "正在啟動加班單產生器2.0..."
+# 加班單產生器1.0.0啟動腳本
+echo "正在啟動加班單產生器1.0.0..."
 
 # 檢查Python是否安裝
 if ! command -v python3 &> /dev/null; then
@@ -44,19 +44,28 @@ if [ ! -f "backend/.env" ]; then
     fi
 fi
 
-# 啟動後端服務
-echo "啟動後端服務..."
+# 更新後端依賴
+echo "更新後端依賴..."
 cd backend
+python3 -m pip install --upgrade pip
 python3 -m pip install -r requirements.txt
+if [ $? -ne 0 ]; then
+    echo "錯誤: 後端依賴安裝失敗"
+    exit 1
+fi
 cd ..
-echo "後端依賴安裝完成"
+echo "後端依賴更新完成"
 
-# 啟動前端服務
-echo "啟動前端服務..."
+# 更新前端依賴
+echo "更新前端依賴..."
 cd frontend
-npm install
+npm install --legacy-peer-deps
+if [ $? -ne 0 ]; then
+    echo "錯誤: 前端依賴安裝失敗"
+    exit 1
+fi
 cd ..
-echo "前端依賴安裝完成"
+echo "前端依賴更新完成"
 
 # 啟動前後端服務
 echo "正在啟動服務..."
@@ -73,9 +82,9 @@ fi
 # 在新的終端窗口中啟動後端
 echo "啟動後端服務..."
 cd backend
-osascript -e 'tell app "Terminal" to do script "cd '$(pwd)' && python3 -m uvicorn src.api.main:app --reload --host 0.0.0.0 --port 5000"' || {
+osascript -e 'tell app "Terminal" to do script "cd '$(pwd)' && python3 -m uvicorn main:app --reload --host 0.0.0.0 --port 8088"' || {
     echo "無法使用osascript啟動新終端，嘗試使用後台方式啟動..."
-    python3 -m uvicorn src.api.main:app --reload --host 0.0.0.0 --port 5000 &
+    python3 -m uvicorn main:app --reload --host 0.0.0.0 --port 8088 &
 }
 cd ..
 
@@ -89,8 +98,8 @@ osascript -e 'tell app "Terminal" to do script "cd '$(pwd)' && npm start"' || {
 cd ..
 
 echo "======================================"
-echo "加班單產生器2.0已成功啟動！"
-echo "前端地址: http://$IP_ADDRESS:3000"
-echo "後端API地址: http://$IP_ADDRESS:5000"
-echo "API文檔: http://$IP_ADDRESS:5000/docs"
+echo "加班單產生器1.0.0已成功啟動！"
+echo "前端地址: http://$IP_ADDRESS:9527"
+echo "後端API地址: http://$IP_ADDRESS:8088"
+echo "API文檔: http://$IP_ADDRESS:8088/docs"
 echo "======================================" 
