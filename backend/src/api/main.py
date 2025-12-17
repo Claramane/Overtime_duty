@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 script_dir = os.path.dirname(__file__)
 BASE_DIR = os.path.abspath(os.path.join(script_dir, '..', '..'))
 DATA_DIR = os.path.join(BASE_DIR, 'data')
-HOLIDAY_FILE = os.path.join(DATA_DIR, 'holiday_2025.json')
+HOLIDAY_FILE = os.path.join(DATA_DIR, 'holiday_2026.json')
 DUTIES_FILE = os.path.join(DATA_DIR, 'duties.json')
 OUTPUT_DIR = os.path.join(DATA_DIR, 'output')
 
