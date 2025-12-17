@@ -132,14 +132,18 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# 從環境變數讀取 CORS 設定
+BACKEND_CORS_ORIGINS = os.getenv(
+    "BACKEND_CORS_ORIGINS",
+    "http://localhost:9527,http://127.0.0.1:9527,http://127.0.0.1:3000"
+)
+# 將逗號分隔的字串轉換為列表
+allowed_origins = [origin.strip() for origin in BACKEND_CORS_ORIGINS.split(",")]
+
 # 新增 CORS 中間件
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://127.0.0.1:3000",
-        "http://localhost:9527",
-        "http://127.0.0.1:9527"
-    ],  # 允許前端開發服務器
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # 明確列出允許的 HTTP 方法
     allow_headers=["*"],  # 允許所有標頭
