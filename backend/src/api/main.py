@@ -164,22 +164,67 @@ async def options_handler(path: str):
 @app.get("/holidays", summary="獲取所有假日資料")
 async def get_all_holidays():
     try:
+        logger.info(f"嘗試讀取假日檔案: {HOLIDAY_FILE}")
+        
+        # 檢查檔案是否存在
+        if not os.path.exists(HOLIDAY_FILE):
+            logger.error(f"假日檔案不存在: {HOLIDAY_FILE}")
+            logger.error(f"當前工作目錄: {os.getcwd()}")
+            logger.error(f"BASE_DIR: {BASE_DIR}")
+            logger.error(f"DATA_DIR: {DATA_DIR}")
+            
+            # 列出 DATA_DIR 的內容以便診斷
+            if os.path.exists(DATA_DIR):
+                logger.error(f"DATA_DIR 內容: {os.listdir(DATA_DIR)}")
+            else:
+                logger.error(f"DATA_DIR 目錄不存在: {DATA_DIR}")
+            
+            raise HTTPException(
+                status_code=500, 
+                detail=f"假日資料檔案不存在: {HOLIDAY_FILE}"
+            )
+        
         with open(HOLIDAY_FILE, 'r', encoding='utf-8') as f:
             holidays = json.load(f)
+        
+        logger.info(f"成功讀取 {len(holidays)} 筆假日資料")
         return holidays
+        
+    except HTTPException:
+        raise
+    except json.JSONDecodeError as e:
+        logger.error(f"解析假日 JSON 檔案失敗: {e}")
+        raise HTTPException(status_code=500, detail=f"假日資料格式錯誤: {str(e)}")
     except Exception as e:
-        logger.error(f"讀取假日資料時發生錯誤: {e}")
-        raise HTTPException(status_code=500, detail="無法讀取假日資料")
+        logger.error(f"讀取假日資料時發生錯誤: {e}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"無法讀取假日資料: {str(e)}")
 
 # 獲取特定月份的假日資料
 @app.get("/holidays/month/{year_month}", summary="獲取特定月份的假日資料")
 async def get_holidays_by_month(year_month: str):
     try:
+        logger.info(f"嘗試讀取 {year_month} 月份的假日資料")
+        
+        # 檢查檔案是否存在
+        if not os.path.exists(HOLIDAY_FILE):
+            logger.error(f"假日檔案不存在: {HOLIDAY_FILE}")
+            raise HTTPException(
+                status_code=500, 
+                detail=f"假日資料檔案不存在: {HOLIDAY_FILE}"
+            )
+        
         with open(HOLIDAY_FILE, 'r', encoding='utf-8') as f:
             all_holidays = json.load(f)
         
-        month_holidays = [h for h in all_holidays if h["西元日期"].startswith(year_month)]
+        month_holidays = [h for h in all_holidays if h.get("西元日期", "").startswith(year_month)]
+        logger.info(f"找到 {len(month_holidays)} 筆 {year_month} 月份的假日資料")
         return month_holidays
+        
+    except HTTPException:
+        raise
+    except json.JSONDecodeError as e:
+        logger.error(f"解析假日 JSON 檔案失敗: {e}")
+        raise HTTPException(status_code=500, detail=f"假日資料格式錯誤: {str(e)}")
     except Exception as e:
         logger.error(f"讀取 {year_month} 月份假日資料時發生錯誤: {e}")
         raise HTTPException(status_code=500, detail=f"無法讀取 {year_month} 月份假日資料")
