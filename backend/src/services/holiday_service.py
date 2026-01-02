@@ -44,37 +44,65 @@ class HolidayService:
 
     def _load_holidays(self):
         """從 JSON 檔案載入假日資料。"""
-        logger.info(f"Loading holidays from {self.holiday_file}")
+        logger.info(f"開始載入假日檔案: {self.holiday_file}")
+        
+        # 確定最終使用的檔案路徑
+        final_path = None
+        
         try:
-            # 檢查是否為絕對路徑
-            if os.path.isabs(self.holiday_file) and os.path.exists(self.holiday_file):
-                # 如果是絕對路徑且存在，直接使用
-                logger.debug(f"使用絕對路徑載入假日檔案: {self.holiday_file}")
+            # 先正規化路徑（解析 .. 等符號）
+            normalized_path = os.path.abspath(self.holiday_file)
+            
+            # 1. 檢查正規化後的路徑是否存在
+            if os.path.exists(normalized_path):
+                final_path = normalized_path
+                logger.info(f"✓ 使用路徑: {final_path}")
+            # 2. 如果原始路徑是絕對路徑但不存在
+            elif os.path.isabs(self.holiday_file):
+                logger.error(f"✗ 絕對路徑不存在: {self.holiday_file}")
+                raise FileNotFoundError(f"找不到假日檔案: {self.holiday_file}")
             else:
-                # 嘗試相對於當前工作目錄載入
-                if not os.path.exists(self.holiday_file):
-                    # 嘗試在 data 子目錄查找
-                    data_dir_path = os.path.join(os.getcwd(), 'backend', 'data')
-                    potential_path = os.path.join(data_dir_path, os.path.basename(self.holiday_file))
-                    logger.debug(f"嘗試從 data 目錄載入: {potential_path}")
+                # 3. 如果是相對路徑，嘗試多個位置
+                logger.debug(f"檔案路徑為相對路徑，開始搜尋...")
+                
+                # 3a. 嘗試相對於服務檔案的位置 (backend/data/)
+                script_dir = os.path.dirname(__file__)
+                base_dir = os.path.abspath(os.path.join(script_dir, '..', '..'))
+                data_dir = os.path.join(base_dir, 'data')
+                potential_path = os.path.join(data_dir, os.path.basename(self.holiday_file))
+                logger.debug(f"嘗試路徑 1 (backend/data/): {potential_path}")
+                
+                if os.path.exists(potential_path):
+                    final_path = potential_path
+                    logger.info(f"✓ 在 backend/data/ 找到檔案: {final_path}")
+                else:
+                    # 3b. 嘗試相對於當前工作目錄
+                    cwd_path = os.path.join(os.getcwd(), self.holiday_file)
+                    logger.debug(f"嘗試路徑 2 (當前工作目錄): {cwd_path}")
                     
-                    if os.path.exists(potential_path):
-                        self.holiday_file = potential_path
+                    if os.path.exists(cwd_path):
+                        final_path = cwd_path
+                        logger.info(f"✓ 在當前工作目錄找到檔案: {final_path}")
                     else:
-                        # 嘗試相對於服務檔案的位置載入
-                        script_dir = os.path.dirname(__file__)
-                        base_dir = os.path.abspath(os.path.join(script_dir, '..', '..'))
-                        data_dir = os.path.join(base_dir, 'data')
-                        potential_path = os.path.join(data_dir, os.path.basename(self.holiday_file))
-                        logger.debug(f"嘗試從腳本相對路徑載入: {potential_path}")
+                        # 3c. 嘗試在 backend/data 相對於當前工作目錄
+                        backend_data_path = os.path.join(os.getcwd(), 'backend', 'data', os.path.basename(self.holiday_file))
+                        logger.debug(f"嘗試路徑 3 (./backend/data/): {backend_data_path}")
                         
-                        if os.path.exists(potential_path):
-                            self.holiday_file = potential_path
+                        if os.path.exists(backend_data_path):
+                            final_path = backend_data_path
+                            logger.info(f"✓ 在 ./backend/data/ 找到檔案: {final_path}")
                         else:
-                            logger.error(f"錯誤：找不到假日檔案 {self.holiday_file}")
+                            logger.error(f"✗ 在所有位置都找不到假日檔案: {self.holiday_file}")
+                            logger.error(f"  已嘗試的路徑:")
+                            logger.error(f"    0. {normalized_path}")
+                            logger.error(f"    1. {potential_path}")
+                            logger.error(f"    2. {cwd_path}")
+                            logger.error(f"    3. {backend_data_path}")
                             raise FileNotFoundError(f"找不到假日檔案: {self.holiday_file}")
             
-            logger.info(f"最終使用的假日檔案路徑: {self.holiday_file}")
+            # 更新為最終路徑
+            self.holiday_file = final_path
+            logger.info(f"=== 最終使用的假日檔案路徑: {self.holiday_file} ===")
             with open(self.holiday_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
             
