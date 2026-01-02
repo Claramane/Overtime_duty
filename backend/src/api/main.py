@@ -24,7 +24,43 @@ logger = logging.getLogger(__name__)
 # 設定資料檔案路徑
 script_dir = os.path.dirname(__file__)
 BASE_DIR = os.path.abspath(os.path.join(script_dir, '..', '..'))
-DATA_DIR = os.path.join(BASE_DIR, 'data')
+
+# 智能路徑檢測：支援多種部署環境
+# 1. 優先使用環境變數
+# 2. 檢查多個可能的路徑位置
+def find_data_dir():
+    """智能尋找 data 目錄的位置"""
+    # 方案 1: 使用環境變數（最高優先級）
+    if 'DATA_DIR' in os.environ:
+        data_dir = os.environ['DATA_DIR']
+        if os.path.exists(data_dir):
+            logger.info(f"使用環境變數指定的 DATA_DIR: {data_dir}")
+            return data_dir
+    
+    # 方案 2: 嘗試多個可能的位置
+    possible_paths = [
+        os.path.join(BASE_DIR, 'data'),           # /backend/data (本地開發)
+        '/app/backend/data',                       # Zeabur 可能的路徑 1
+        '/app/data',                               # Zeabur 可能的路徑 2
+        os.path.join(os.getcwd(), 'data'),        # 當前工作目錄/data
+        os.path.join(os.getcwd(), 'backend', 'data'),  # 當前工作目錄/backend/data
+    ]
+    
+    for path in possible_paths:
+        if os.path.exists(path) and os.path.isdir(path):
+            # 檢查是否包含關鍵檔案
+            test_file = os.path.join(path, 'holiday_2026.json')
+            if os.path.exists(test_file):
+                logger.info(f"找到 data 目錄: {path}")
+                return path
+    
+    # 如果都找不到，使用預設路徑並記錄警告
+    default_path = os.path.join(BASE_DIR, 'data')
+    logger.warning(f"無法找到 data 目錄，使用預設路徑: {default_path}")
+    logger.warning(f"嘗試過的路徑: {possible_paths}")
+    return default_path
+
+DATA_DIR = find_data_dir()
 HOLIDAY_FILE = os.path.join(DATA_DIR, 'holiday_2026.json')
 DUTIES_FILE = os.path.join(DATA_DIR, 'duties.json')
 OUTPUT_DIR = os.path.join(DATA_DIR, 'output')
@@ -33,9 +69,12 @@ OUTPUT_DIR = os.path.join(DATA_DIR, 'output')
 os.makedirs(OUTPUT_DIR, exist_ok=True)
 
 # 確認檔案路徑
+logger.info(f"當前工作目錄: {os.getcwd()}")
+logger.info(f"script_dir: {script_dir}")
 logger.info(f"BASE_DIR: {BASE_DIR}")
 logger.info(f"DATA_DIR: {DATA_DIR}")
 logger.info(f"HOLIDAY_FILE: {HOLIDAY_FILE}")
+logger.info(f"HOLIDAY_FILE 存在: {os.path.exists(HOLIDAY_FILE)}")
 logger.info(f"DUTIES_FILE: {DUTIES_FILE}")
 logger.info(f"OUTPUT_DIR: {OUTPUT_DIR}")
 
