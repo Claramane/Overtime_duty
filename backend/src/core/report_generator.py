@@ -269,12 +269,12 @@ def generate_reports(year_month: str, target_member_id: Optional[str] = None):
     # --- 初始化服務 ---
     try:
         # 明確傳遞絕對路徑以避免歧義
-        holiday_service = HolidayService(holiday_file=os.path.join(DATA_DIR, 'holiday_2025.json'))
+        holiday_service = HolidayService(holiday_file=os.path.join(DATA_DIR, 'holiday_2026.json'))
         excel_service = ExcelService(
             template_path=os.path.join(DATA_DIR, 'VSduty_template.xlsx'),
             output_dir=OUTPUT_DIR # 使用全局定義的 OUTPUT_DIR
         )
-        logger.info(f"服務初始化完成，使用假日檔案: {os.path.join(DATA_DIR, 'holiday_2025.json')}")
+        logger.info(f"服務初始化完成，使用假日檔案: {os.path.join(DATA_DIR, 'holiday_2026.json')}")
         logger.info(f"服務初始化完成，使用模板檔案: {os.path.join(DATA_DIR, 'VSduty_template.xlsx')}")
         logger.info(f"服務初始化完成，使用輸出目錄: {OUTPUT_DIR}")
     except Exception as e:

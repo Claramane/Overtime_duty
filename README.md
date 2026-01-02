@@ -65,7 +65,7 @@
 ## 數據文件
 
 - `backend/data/duties.json`：加班記錄數據
-- `backend/data/holiday_2025.json`：假日數據
+- `backend/data/holiday_2026.json`：假日數據
 
 ## API文檔
 

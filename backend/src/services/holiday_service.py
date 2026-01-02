@@ -6,9 +6,9 @@ import logging
 from typing import Union
 
 # --- 設定 ---
-# HOLIDAY_FILE = 'holiday_2025.json' # 原始路徑
-# HOLIDAY_FILE = 'data/holiday_2025.json' # 更新路徑
-HOLIDAY_FILE = 'holiday_2025.json' # 僅使用文件名，將在初始化時計算完整路徑
+# HOLIDAY_FILE = 'holiday_2026.json' # 原始路徑
+# HOLIDAY_FILE = 'data/holiday_2026.json' # 更新路徑
+HOLIDAY_FILE = 'holiday_2026.json' # 僅使用文件名，將在初始化時計算完整路徑
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - [%(funcName)s] - %(message)s')
 logger = logging.getLogger(__name__)

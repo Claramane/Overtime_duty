@@ -8,7 +8,7 @@
 Overtime_duty/
 ├── .venv/                  # Python 虛擬環境
 ├── data/                   # 資料與設定檔
-│   ├── holiday_2025.json   # 假日定義
+│   ├── holiday_2026.json   # 假日定義
 │   ├── duties.json         # 手動排班記錄
 │   ├── members.json        # 成員與日曆 ID
 │   ├── VSduty_template.xlsx # Excel 模板
@@ -50,7 +50,7 @@ Overtime_duty/
     *   **重要**: 與每個成員的 Google Calendar 共享行事曆讀取權限給這個服務帳號的電子郵件地址 (可在 `service_account.json` 中找到 `client_email`)。
 5.  **準備資料檔案**:
     *   確保 `data/members.json` 包含正確的成員 ID、姓名、員工編號 (`employee_id`) 和 Google Calendar ID (`calendar_id`)。
-    *   確保 `data/holiday_2025.json` 包含正確的假日資訊。
+    *   確保 `data/holiday_2026.json` 包含正確的假日資訊。
     *   確保 `data/duties.json` 包含手動排班記錄 (如果需要)。
     *   確保 `data/VSduty_template.xlsx` 是正確的 Excel 模板。
 
