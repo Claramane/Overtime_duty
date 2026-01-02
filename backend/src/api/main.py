@@ -135,10 +135,13 @@ app = FastAPI(
 # 從環境變數讀取 CORS 設定
 BACKEND_CORS_ORIGINS = os.getenv(
     "BACKEND_CORS_ORIGINS",
-    "http://localhost:9527,http://127.0.0.1:9527,http://127.0.0.1:3000"
+    "http://localhost:9527,http://127.0.0.1:9527,http://127.0.0.1:3000,https://eckanesovertime.claramane.com"
 )
 # 將逗號分隔的字串轉換為列表
 allowed_origins = [origin.strip() for origin in BACKEND_CORS_ORIGINS.split(",")]
+
+# 記錄允許的來源
+logger.info(f"CORS 允許的來源: {allowed_origins}")
 
 # 新增 CORS 中間件
 app.add_middleware(
