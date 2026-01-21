@@ -162,6 +162,13 @@ class ExcelService:
             self._set_thick_border(sheet, 'A2:L2')
             # --------------------------
 
+            # --- 對 K1:L1 (姓名欄位) 加上右側框線 ---
+            medium_side = Side(style='medium')
+            cell_l1 = sheet['L1']
+            cell_l1.border = Border(right=medium_side)
+            logger.info("已對 L1 設定右側框線")
+            # --------------------------
+
             # 儲存檔案
             workbook.save(output_path)
             logger.info(f"Excel file generated: {output_path}")
@@ -203,7 +210,7 @@ class ExcelService:
             ws: 工作表物件
             cell_range: 儲存格範圍，例如 'A2:L2'
         """
-        thick_side = Side(style='thick')
+        thick_side = Side(style='medium')
 
         # 解析範圍
         from openpyxl.utils import range_boundaries
