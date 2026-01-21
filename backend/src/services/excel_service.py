@@ -162,11 +162,12 @@ class ExcelService:
             self._set_thick_border(sheet, 'A2:L2')
             # --------------------------
 
-            # --- 對 K1 (姓名欄位) 加上框線 ---
+            # --- 對 K1、L1 (姓名欄位) 加上框線 ---
             thin_side = Side(style='thin')
-            cell_k1 = sheet['K1']
-            cell_k1.border = Border(top=thin_side, bottom=thin_side, left=thin_side, right=thin_side)
-            logger.info("已對 K1 設定框線")
+            for cell_addr in ['K1', 'L1']:
+                cell = sheet[cell_addr]
+                cell.border = Border(top=thin_side, bottom=thin_side, left=thin_side, right=thin_side)
+            logger.info("已對 K1、L1 設定框線")
             # --------------------------
 
             # --- 取消 A1、D1、G1、J1 的粗體字 ---
