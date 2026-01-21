@@ -163,11 +163,11 @@ class ExcelService:
             # --------------------------
 
             # --- 對 K1:L1 (姓名欄位) 加上框線 ---
-            thin_side = Side(style='thin')
+            medium_side = Side(style='medium')
             # K1: 上、下、左邊框
-            sheet['K1'].border = Border(top=thin_side, bottom=thin_side, left=thin_side)
+            sheet['K1'].border = Border(top=medium_side, bottom=medium_side, left=medium_side)
             # L1: 上、下、右邊框
-            sheet['L1'].border = Border(top=thin_side, bottom=thin_side, right=thin_side)
+            sheet['L1'].border = Border(top=medium_side, bottom=medium_side, right=medium_side)
             logger.info("已對 K1:L1 設定框線")
             # --------------------------
 
@@ -219,7 +219,7 @@ class ExcelService:
             ws: 工作表物件
             cell_range: 儲存格範圍，例如 'A2:L2'
         """
-        border_side = Side(style='thin')
+        border_side = Side(style='medium')
 
         # 解析範圍
         from openpyxl.utils import range_boundaries
