@@ -162,12 +162,13 @@ class ExcelService:
             self._set_thick_border(sheet, 'A2:L2')
             # --------------------------
 
-            # --- 對 K1、L1 (姓名欄位) 加上框線 ---
+            # --- 對 K1:L1 (姓名欄位) 加上框線 ---
             thin_side = Side(style='thin')
-            for cell_addr in ['K1', 'L1']:
-                cell = sheet[cell_addr]
-                cell.border = Border(top=thin_side, bottom=thin_side, left=thin_side, right=thin_side)
-            logger.info("已對 K1、L1 設定框線")
+            # K1: 上、下、左邊框
+            sheet['K1'].border = Border(top=thin_side, bottom=thin_side, left=thin_side)
+            # L1: 上、下、右邊框
+            sheet['L1'].border = Border(top=thin_side, bottom=thin_side, right=thin_side)
+            logger.info("已對 K1:L1 設定框線")
             # --------------------------
 
             # --- 取消 A1、D1、G1、J1 的粗體字 ---
@@ -212,13 +213,13 @@ class ExcelService:
         logger.info(f"已設定頁首文字: {header_text}")
 
     def _set_thick_border(self, ws, cell_range):
-        """對指定範圍設定粗框線
+        """對指定範圍設定框線（適用於合併儲存格）
 
         Args:
             ws: 工作表物件
             cell_range: 儲存格範圍，例如 'A2:L2'
         """
-        thick_side = Side(style='thin')
+        border_side = Side(style='thin')
 
         # 解析範圍
         from openpyxl.utils import range_boundaries
@@ -228,15 +229,15 @@ class ExcelService:
             for col in range(min_col, max_col + 1):
                 cell = ws.cell(row=row, column=col)
 
-                # 決定每個儲存格需要哪些邊框
-                top = thick_side if row == min_row else None
-                bottom = thick_side if row == max_row else None
-                left = thick_side if col == min_col else None
-                right = thick_side if col == max_col else None
+                # 合併儲存格：每個儲存格都要設定上下邊框，左右只設定邊界
+                top = border_side
+                bottom = border_side
+                left = border_side if col == min_col else None
+                right = border_side if col == max_col else None
 
                 cell.border = Border(top=top, bottom=bottom, left=left, right=right)
 
-        logger.info(f"已對 {cell_range} 設定粗框線")
+        logger.info(f"已對 {cell_range} 設定框線")
 
     def _set_member_info(self, ws, member):
         """填寫成員資訊 (舊版邏輯)"""
