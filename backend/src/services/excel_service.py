@@ -4,7 +4,7 @@ import datetime # 改回舊版匯入
 # from app.utils import western_to_roc_year # 移除錯誤的匯入
 import logging
 import os # 新增匯入 os
-from openpyxl.styles import Alignment, Font
+from openpyxl.styles import Alignment, Font, Border, Side
 
 # --- 設定 ---
 # TEMPLATE_PATH = 'data/templates/VSduty_template.xlsx' # 改回舊版模板路徑
@@ -158,6 +158,10 @@ class ExcelService:
                  sheet.merge_cells(str(merged_range))
             # --------------------------
 
+            # --- 對 A2:L2 加上粗框線 ---
+            self._set_thick_border(sheet, 'A2:L2')
+            # --------------------------
+
             # 儲存檔案
             workbook.save(output_path)
             logger.info(f"Excel file generated: {output_path}")
@@ -176,18 +180,48 @@ class ExcelService:
 
     # --- 舊版輔助方法 ---
     def _set_header(self, ws, header_text):
-        """設定頁首 (舊版邏輯)"""
-        # 註解掉，因為 openpyxl 對 header/footer 的支援有限且可能不穩定
-        # ws.oddHeader.center.text = header_text
-        # ws.oddHeader.left.text = ""
-        # ws.oddHeader.right.text = ""
-        # ws.page_setup.differentFirst = False
-        # ws.page_setup.scaleWithDoc = True # 這些頁面設定可能需要在模板中預設好
-        # ws.page_setup.alignWithMargins = True
-        # 替代方案：如果模板 A1 通常放標題，可以寫入儲存格
-        # ws['A1'] = header_text # 根據實際模板調整
-        logger.info(f"已設定標頭文字 (邏輯上): {header_text} (實際頁首/頁尾寫入已註解)")
+        """設定頁首 (置中顯示標題)
 
+        Args:
+            ws: 工作表物件
+            header_text: 頁首文字，例如「115年01月份主治醫師加班時數彙整表」
+        """
+        # 設定頁首置中文字
+        ws.oddHeader.center.text = header_text
+        ws.oddHeader.left.text = ""
+        ws.oddHeader.right.text = ""
+
+        # 頁面設定
+        ws.page_setup.differentFirst = False
+
+        logger.info(f"已設定頁首文字: {header_text}")
+
+    def _set_thick_border(self, ws, cell_range):
+        """對指定範圍設定粗框線
+
+        Args:
+            ws: 工作表物件
+            cell_range: 儲存格範圍，例如 'A2:L2'
+        """
+        thick_side = Side(style='thick')
+
+        # 解析範圍
+        from openpyxl.utils import range_boundaries
+        min_col, min_row, max_col, max_row = range_boundaries(cell_range)
+
+        for row in range(min_row, max_row + 1):
+            for col in range(min_col, max_col + 1):
+                cell = ws.cell(row=row, column=col)
+
+                # 決定每個儲存格需要哪些邊框
+                top = thick_side if row == min_row else None
+                bottom = thick_side if row == max_row else None
+                left = thick_side if col == min_col else None
+                right = thick_side if col == max_col else None
+
+                cell.border = Border(top=top, bottom=bottom, left=left, right=right)
+
+        logger.info(f"已對 {cell_range} 設定粗框線")
 
     def _set_member_info(self, ws, member):
         """填寫成員資訊 (舊版邏輯)"""
